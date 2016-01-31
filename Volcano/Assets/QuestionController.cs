@@ -192,8 +192,9 @@ public class SkinCondition : Condition{
 	}
 
 	protected override GameObject CreateIcon(){
-
-		return GameObject.Instantiate(Resources.Load ("Skins/" + skin.ToString () + "Prefab") ) as GameObject;
+		GameObject icon = GameObject.Instantiate (Resources.Load ("Skins/" + skin.ToString () + "Prefab")) as GameObject;
+		icon.transform.localScale = new Vector3 (0.6f, 0.6f, 0.6f);
+		return icon;
 	}
 
 	public override void RemoveInvalidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
@@ -282,8 +283,8 @@ public class QuestionController : MonoBehaviour {
 		numCondition = numCondition > 3 ? 3 : numCondition;
 
 		for (int i = 0; i < numCondition; i++) {
-			int index = UnityEngine.Random.Range(0, createConditions.Count-1);
-			int positiveIndex = UnityEngine.Random.Range(0, isPositiveList.Count-1);
+			int index = UnityEngine.Random.Range(0, createConditions.Count);
+			int positiveIndex = UnityEngine.Random.Range(0, isPositiveList.Count);
 			conditions.Add(createConditions[index]( !isPositiveList[positiveIndex] ) );
 			createConditions.RemoveAt (index);
 			isPositiveList.RemoveAt( positiveIndex );
@@ -322,12 +323,41 @@ public class QuestionController : MonoBehaviour {
 
 		texto.SetActive (false);
 
-		for (int i= 0; i<conditions.Count; i++) {
-			Condition cond = conditions [i];
-			GameObject icon = cond.CreateDisplay ();
-			icons.Add (icon);
-			icon.transform.parent = this.transform;
-			icon.transform.localPosition = (i - (conditions.Count - 1) / 2) * 3f * (new Vector3 (1f, 0, 0));
+		if (conditions.Count == 1) {
+			for (int i = 0; i < conditions.Count; i++) {
+				Condition cond = conditions [i];
+				GameObject icon = cond.CreateDisplay ();
+				icons.Add (icon);
+				icon.transform.parent = this.transform;
+				icon.transform.localPosition = new Vector3 (0f, 0, 0);
+			}
+			
+		} else if (conditions.Count == 2) {
+			for (int i = 0; i < conditions.Count; i++) {
+				Condition cond = conditions [i];
+				GameObject icon = cond.CreateDisplay ();
+				icons.Add (icon);
+				icon.transform.parent = this.transform;
+				icon.transform.localPosition = (i- 0.5f) * 2f * (new Vector3 (1f, 0, 0));
+			}
+
+		} else if (conditions.Count == 3) {
+			for (int i = 0; i < conditions.Count; i++) {
+				Condition cond = conditions [i];
+				GameObject icon = cond.CreateDisplay ();
+				icons.Add (icon);
+				icon.transform.parent = this.transform;
+				icon.transform.localPosition = (i- 1f) * 2f * (new Vector3 (1f, 0, 0));
+			}
+
+		} else {
+			for (int i = 0; i < conditions.Count; i++) {
+				Condition cond = conditions [i];
+				GameObject icon = cond.CreateDisplay ();
+				icons.Add (icon);
+				icon.transform.parent = this.transform;
+				icon.transform.localPosition = (i - (conditions.Count - 1) / 2) * 3f * (new Vector3 (1f, 0, 0));
+			}
 		}
 	}
 
