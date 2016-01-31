@@ -273,7 +273,7 @@ public class GameManager : MonoBehaviour {
 		yield return new WaitForSeconds (0.5f);
 		while(true) {
 			if( Input.GetMouseButtonDown(0) ){
-				UnityEngine.SceneManagement.SceneManager.LoadScene (1);
+				UnityEngine.SceneManagement.SceneManager.LoadScene (2);
 				yield break;
 			}
 			yield return 0;
