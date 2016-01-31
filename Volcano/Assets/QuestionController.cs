@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 
 
 public abstract class Condition{
@@ -262,10 +262,17 @@ public class QuestionController : MonoBehaviour {
 
 	}
 
-	delegate Condition CreateConditionFunc();
-	public void defineConditions(int numCondition ){
+	delegate Condition CreateConditionFunc(bool isPositive);
+
+	public void defineConditions(int numCondition, int numNegations ){
 
 		conditions.Clear();
+
+
+		List<bool> isPositiveList = new List<bool> ();
+		for(int i = 0; i < numCondition; i++ ) {
+			isPositiveList.Add( i<= numNegations ? false : true );
+		}
 
 		List<CreateConditionFunc> createConditions = new List<CreateConditionFunc> ();
 		createConditions.Add (getQuestionHair);
@@ -276,8 +283,10 @@ public class QuestionController : MonoBehaviour {
 
 		for (int i = 0; i < numCondition; i++) {
 			int index = UnityEngine.Random.Range(0, createConditions.Count-1);
-			conditions.Add(createConditions[index]() );
+			int positiveIndex = UnityEngine.Random.Range(0, isPositiveList.Count-1);
+			conditions.Add(createConditions[index]( isPositiveList[positiveIndex] ) );
 			createConditions.RemoveAt (index);
+			isPositiveList.RemoveAt( positiveIndex );
 		}
 
 		validHairs = new List<Condition.Hair> ( allHairs.ToArray() );
@@ -323,37 +332,31 @@ public class QuestionController : MonoBehaviour {
 	}
 
 
-	Condition getQuestionPant(){
-
-		bool yes = UnityEngine.Random.Range (0, 1f)<0.5f;
+	Condition getQuestionPant( bool isPositive ){
 
 		int n = Enum.GetNames(typeof(Condition.Pant)).Length;
 		Condition.Pant pant = (Condition.Pant)UnityEngine.Random.Range(0, n);
 
-		Condition condition = new PantCondition (yes, pant);
+		Condition condition = new PantCondition (isPositive, pant);
 		return condition;		
 
 	}
 
-	Condition getQuestionHair(){
-
-		bool yes = UnityEngine.Random.Range (0, 1f)<0.5f;
+	Condition getQuestionHair( bool isPositive ){
 
 		int n = Enum.GetNames(typeof(Condition.Hair)).Length;
 		Condition.Hair hair = (Condition.Hair)UnityEngine.Random.Range(0, n);
 
-		Condition condition = new HairCondition (yes, hair);
+		Condition condition = new HairCondition (isPositive, hair);
 		return condition;		
 
 	}
-	Condition getQuestionSkin(){
-
-		bool yes = UnityEngine.Random.Range (0, 1f)<0.5f;
+	Condition getQuestionSkin( bool isPositive ){
 
 		int n = Enum.GetNames(typeof(Condition.Skin)).Length;
 		Condition.Skin pant = (Condition.Skin)UnityEngine.Random.Range(0, n);
 
-		Condition condition = new SkinCondition (yes, pant);
+		Condition condition = new SkinCondition (isPositive, pant);
 		return condition;		
 
 	}

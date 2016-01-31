@@ -55,14 +55,54 @@ public class GameManager : MonoBehaviour {
 		loadGame();
 
 	}
+
+	int GetFollowers(){
+		int min = level < minFollowers.Length ? minFollowers [level] : minFollowers [minFollowers.Length - 1];
+		int max = level < maxFollowers.Length ? maxFollowers [level] : maxFollowers [maxFollowers.Length - 1];
+		int retVal = UnityEngine.Random.Range(min,max);
+		retVal = Mathf.Clamp (retVal, 0, spawnPoints.Count);
+		print ("followers for level "+level+ ": " + retVal);
+		return retVal;
+	}
+
+	float GetValidPercentage(){
+		float min = (level < minValidPercentage.Length ? minValidPercentage [level] : minValidPercentage [minValidPercentage.Length - 1])/100f;
+		float max = (level < maxValidPercentage.Length ? maxValidPercentage [level] : maxValidPercentage [maxValidPercentage.Length - 1])/100f;
+		float retVal = UnityEngine.Random.Range(min,max);
+		retVal = Mathf.Clamp01( retVal );
+		print ("valid percentage for level "+level+ ": " + retVal);
+		return retVal;
+	}
+
+	int GetConditions(){
+		int min = level < minCondition.Length ? minCondition [level] : minCondition [minCondition.Length - 1];
+		int max = level < maxCondition.Length ? maxCondition [level] : maxCondition [maxCondition.Length - 1];
+		int retVal = UnityEngine.Random.Range(min,max);
+		retVal = Mathf.Clamp( retVal, 0, 3 );
+		print ("conditions for level "+level+ ": " + retVal);
+		return retVal;
+	}
+
+	float GetNegationPercentage(){
+		float min = (level < minNegation.Length ? minNegation [level] : minNegation [minNegation.Length - 1])/3f;
+		float max = (level < maxNegation.Length ? maxNegation [level] : maxNegation [maxNegation.Length - 1])/3f;
+		float retVal = UnityEngine.Random.Range(min,max);
+		retVal = Mathf.Clamp01( retVal );
+		print ("negation percentage for level "+level+ ": " + retVal);
+		return retVal;
+	}
 		
 	void loadGame(){
 
-		QuestionController.instance.defineConditions (2);
+		int numConditions = GetConditions ();
+		int numNegations = Mathf.RoundToInt ( numConditions * GetNegationPercentage() );
+		QuestionController.instance.defineConditions ( numConditions, numNegations );
 
-		int n = UnityEngine.Random.Range (1, 10);
-		print ("validos: " + n);
-		AparecerMonoCoroutine(n,10-n);
+		int total = GetFollowers();
+		int valid = Mathf.RoundToInt(GetValidPercentage() * total );
+		print ( "total valid for level " + level + ": " + valid );
+
+		AparecerMonoCoroutine(valid,total-valid);
 
 	}
 
@@ -90,7 +130,9 @@ public class GameManager : MonoBehaviour {
 			persons.Add (newPerson);
 			if (QuestionController.instance.IsValid (newPerson)) {
 				remainingGoodAnswers++;
-			}
+			} else {
+				print ("ERROR ... check");
+			} 
 
 		}
 
