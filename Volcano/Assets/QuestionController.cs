@@ -35,7 +35,7 @@ public abstract class Condition{
 	}
 
 	public abstract void RemoveInvalidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins );
-	public abstract void RemoveValidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins );
+	public abstract void AddInvalidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins );
 }
 
 public class PantCondition : Condition{
@@ -87,13 +87,13 @@ public class PantCondition : Condition{
 			}
 		}
 	}
-	public override void RemoveValidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
-		for( int i = pants.Count - 1; i >= 0; i-- ){
-			Pant p = pants [i];
-			if ( yes && pant == p ) {
-				pants.Remove (p);
-			} else if ( !yes && pant != p ) {
-				pants.Remove (p);
+	public override void AddInvalidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
+		for( int i = QuestionController.instance.allPants.Count - 1; i >= 0; i-- ){
+			Pant p = QuestionController.instance.allPants [i];
+			if (yes && pant != p ) {
+				pants.Add (p);
+			} else if ( !yes && pant == p ) {
+				pants.Add (p);
 			}
 		}
 	}
@@ -147,13 +147,13 @@ public class HairCondition : Condition{
 		}
 	}
 
-	public override void RemoveValidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
-		for( int i = hairs.Count - 1; i >= 0; i-- ){
-			Hair h = hairs [i];
-			if (yes && hair == h ) {
-				hairs.Remove (h);
-			} else if ( !yes && hair != h ) {
-				hairs.Remove (h);
+	public override void AddInvalidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
+		for( int i = QuestionController.instance.allHairs.Count - 1; i >= 0; i-- ){
+			Hair h = QuestionController.instance.allHairs [i];
+			if (yes && hair != h ) {
+				hairs.Add (h);
+			} else if ( !yes && hair == h ) {
+				hairs.Add (h);
 			}
 		}
 	}
@@ -207,13 +207,13 @@ public class SkinCondition : Condition{
 		}
 	}
 
-	public override void RemoveValidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
-		for( int i = skins.Count - 1; i >= 0; i-- ){
-			Skin s = skins [i];
-			if (yes && skin == s ) {
-				skins.Remove (s);
-			} else if ( !yes && skin != s ) {
-				skins.Remove (s);
+	public override void AddInvalidElements(List<Hair> hairs, List<Pant> pants, List<Skin> skins ){
+		for( int i = QuestionController.instance.allSkins.Count - 1; i >= 0; i-- ){
+			Skin s = QuestionController.instance.allSkins [i];
+			if (yes && skin != s ) {
+				skins.Add (s);
+			} else if ( !yes && skin == s ) {
+				skins.Add (s);
 			}
 		}
 	}
@@ -284,7 +284,7 @@ public class QuestionController : MonoBehaviour {
 		for (int i = 0; i < numCondition; i++) {
 			int index = UnityEngine.Random.Range(0, createConditions.Count-1);
 			int positiveIndex = UnityEngine.Random.Range(0, isPositiveList.Count-1);
-			conditions.Add(createConditions[index]( isPositiveList[positiveIndex] ) );
+			conditions.Add(createConditions[index]( !isPositiveList[positiveIndex] ) );
 			createConditions.RemoveAt (index);
 			isPositiveList.RemoveAt( positiveIndex );
 		}
@@ -293,13 +293,13 @@ public class QuestionController : MonoBehaviour {
 		validPants = new List<Condition.Pant>( allPants.ToArray() );
 		validSkins = new List<Condition.Skin>( allSkins.ToArray() );
 
-		invalidHairs = new List<Condition.Hair> ( allHairs.ToArray() );
-		invalidPants = new List<Condition.Pant>( allPants.ToArray() );
-		invalidSkins = new List<Condition.Skin>( allSkins.ToArray() );
+		invalidHairs = new List<Condition.Hair>();
+		invalidPants = new List<Condition.Pant>();
+		invalidSkins = new List<Condition.Skin>();
 
 		foreach (Condition condition in conditions) {
 			condition.RemoveInvalidElements( validHairs, validPants, validSkins );
-			condition.RemoveValidElements( invalidHairs, invalidPants, invalidSkins );
+			condition.AddInvalidElements( invalidHairs, invalidPants, invalidSkins );
 		}
 
 		killIcons ();

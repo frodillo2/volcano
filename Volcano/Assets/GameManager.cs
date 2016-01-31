@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour {
 		int min = level < minCondition.Length ? minCondition [level] : minCondition [minCondition.Length - 1];
 		int max = level < maxCondition.Length ? maxCondition [level] : maxCondition [maxCondition.Length - 1];
 		int retVal = UnityEngine.Random.Range(min,max);
-		retVal = Mathf.Clamp( retVal, 0, 3 );
+		retVal = Mathf.Clamp( retVal, 1, 3 );
 		print ("conditions for level "+level+ ": " + retVal);
 		return retVal;
 	}
@@ -101,6 +101,7 @@ public class GameManager : MonoBehaviour {
 
 		int numConditions = GetConditions ();
 		int numNegations = Mathf.RoundToInt ( numConditions * GetNegationPercentage() );
+		print ("num negations for level " + level + ": "  + numNegations );
 		QuestionController.instance.defineConditions ( numConditions, numNegations );
 
 		int total = GetFollowers();
@@ -135,12 +136,13 @@ public class GameManager : MonoBehaviour {
 			persons.Add (newPerson);
 			if (QuestionController.instance.IsValid (newPerson)) {
 				remainingGoodAnswers++;
-			} else {
 				print ("ERROR ... check");
-			} 
+			}
 
 		}
-
+		if (remainingGoodAnswers != valido) {
+			print ("ERROR 2... check");
+		}
 	}
 	/*
 	 * Va imprimieno monos en la pantalla
@@ -169,30 +171,60 @@ public class GameManager : MonoBehaviour {
 		return apereceMono( QuestionController.instance.validHairs, QuestionController.instance.validPants, QuestionController.instance.validSkins, pos );
 	}
 
+	public class SetInvalid {
+		public List<Condition.Hair> selectedHairs;
+		public List<Condition.Pant> selectedPants;
+		public List<Condition.Skin> selectedSkins;
+		public SetInvalid( List<Condition.Hair> h, List<Condition.Pant> p, List<Condition.Skin> s) {
+			selectedHairs = h;
+			selectedPants = p;
+			selectedSkins = s;
+		}
+	}
+
 	Person monoInvalido(Vector3 pos){
 
-		List<Condition.Hair> selectedHairs;
-		List<Condition.Pant> selectedPants;
-		List<Condition.Skin> selectedSkins;
+		List<SetInvalid> availableInvalidSets = new List<SetInvalid> ();
 
-		float r = UnityEngine.Random.value;
-		if( r < 0.3333f ){
-			selectedHairs = QuestionController.instance.invalidHairs;
-			selectedPants = QuestionController.instance.allPants;
-			selectedSkins = QuestionController.instance.allSkins;
+
+		if( QuestionController.instance.invalidHairs.Count > 0 ){
+			SetInvalid setInvalid = new SetInvalid (QuestionController.instance.invalidHairs,
+				                        QuestionController.instance.allPants, QuestionController.instance.allSkins);
+			availableInvalidSets.Add (setInvalid);
 		}
-		else if( r < 0.6666f ){
-			selectedHairs = QuestionController.instance.allHairs;
-			selectedPants = QuestionController.instance.invalidPants;
-			selectedSkins = QuestionController.instance.allSkins;
-		}
-		else{
-			selectedHairs = QuestionController.instance.allHairs;
-			selectedPants = QuestionController.instance.allPants;
-			selectedSkins = QuestionController.instance.invalidSkins;
+		if( QuestionController.instance.invalidPants.Count > 0 ){
+			SetInvalid setInvalid = new SetInvalid (QuestionController.instance.allHairs,
+				QuestionController.instance.invalidPants, QuestionController.instance.allSkins);
+			availableInvalidSets.Add (setInvalid);
 		}
 
-		return apereceMono( selectedHairs, selectedPants, selectedSkins, pos );
+		if( QuestionController.instance.invalidSkins.Count > 0 ){
+			SetInvalid setInvalid = new SetInvalid (QuestionController.instance.allHairs,
+				QuestionController.instance.allPants, QuestionController.instance.invalidSkins);
+			availableInvalidSets.Add (setInvalid);
+		}
+
+		if(availableInvalidSets.Count == 0 ){
+			print ("Error Could not find sets");
+			SetInvalid setInvalid = new SetInvalid (QuestionController.instance.allHairs,
+				QuestionController.instance.allPants, QuestionController.instance.allSkins);
+			availableInvalidSets.Add (setInvalid);
+		}
+
+		int r = UnityEngine.Random.Range (0, availableInvalidSets.Count - 1);
+		SetInvalid selectedSet = availableInvalidSets [r];
+
+		if (selectedSet.selectedHairs == QuestionController.instance.invalidHairs) {
+			print ("invalid hairs");
+		}
+		if (selectedSet.selectedPants == QuestionController.instance.invalidPants) {
+			print ("invalid pants");
+		}
+		if (selectedSet.selectedSkins == QuestionController.instance.invalidSkins) {
+			print ("invalid skins");
+		}
+
+		return apereceMono( selectedSet.selectedHairs, selectedSet.selectedPants, selectedSet.selectedSkins, pos );
 	}
 
 
