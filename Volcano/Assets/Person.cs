@@ -31,11 +31,11 @@ public class Person : MonoBehaviour {
 
 		GameObject hairGameObject = Instantiate(Resources.Load ("Hairs/" + hair.ToString () + "Prefab") ) as GameObject;
 		hairGameObject.transform.parent = this.transform;
-		hairGameObject.transform.localPosition = new Vector3 (0, 1.3f, 0);
+		hairGameObject.transform.localPosition = new Vector3 (-0.2f, 0.61f, 0);
 
 		GameObject pantGameObject = Instantiate(Resources.Load ("Pants/" + pant.ToString () + "Prefab") ) as GameObject;
 		pantGameObject.transform.parent = this.transform;
-		pantGameObject.transform.localPosition = new Vector3 (0, -1f, 0);
+		pantGameObject.transform.localPosition = new Vector3 (-0.2f, -0.21f, 0);
 
 		GameObject skinGameObject = Instantiate(Resources.Load ("Skins/" + skin.ToString () + "Prefab") ) as GameObject;
 		skinGameObject.transform.parent = this.transform;
@@ -46,27 +46,33 @@ public class Person : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {}
 	void OnMouseDown() {
-		
+
+		if(GameManager.instance.gameFinished){
+			return;
+		}
+		if(GameManager.instance.gameStarted){
+			return;
+		}
 		if (pinchado) {
 			return;	
 		}
 
 		pinchado = true;
 		if (QuestionController.instance.IsValid (this)) {
-			StartCoroutine( moverSprite() );
+			StartCoroutine( moverSprite(true) );
 			print ("valido");
-			GameManager.instance.OnAnswer (true);
+
 		} else {
-			StartCoroutine( moverSprite() );
-			GameManager.instance.OnAnswer (false);
+			StartCoroutine( moverSprite(false) );
 		}
 
 	}
 
 
-	IEnumerator moverSprite(){
+	IEnumerator moverSprite( bool isOK ){
 		
 		this.transform.position = new Vector3 (x, y,-1);
+
 
 		float h = this.transform.localScale.y*(float)0.2;
 
@@ -78,6 +84,7 @@ public class Person : MonoBehaviour {
 
 		}
 	
+		GameManager.instance.OnAnswer (isOK);
 		Destroy (this.gameObject);
 	}
 

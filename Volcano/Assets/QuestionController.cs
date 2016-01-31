@@ -237,6 +237,8 @@ public class QuestionController : MonoBehaviour {
 	public List<Condition.Pant> invalidPants = new List<Condition.Pant>();
 	public List<Condition.Skin> invalidSkins = new List<Condition.Skin>();
 
+	GameObject texto;
+
 	// Use this for initialization
 	void Start () {
 		instance = this;
@@ -255,14 +257,28 @@ public class QuestionController : MonoBehaviour {
 		foreach (Condition.Skin s in skinsArray) {
 			allSkins.Add (s);
 		}
+
+		texto = GameObject.FindGameObjectWithTag ("texto");
+
 	}
 
-	public void defineConditions( ){
+	delegate Condition CreateConditionFunc();
+	public void defineConditions(int numCondition ){
 
 		conditions.Clear();
-		conditions.Add( this.getQuestionHair() );
-		conditions.Add( this.getQuestionPant() );
-		conditions.Add( this.getQuestionSkin() );
+
+		List<CreateConditionFunc> createConditions = new List<CreateConditionFunc> ();
+		createConditions.Add (getQuestionHair);
+		createConditions.Add (getQuestionPant);
+		createConditions.Add (getQuestionSkin);
+
+		numCondition = numCondition > 3 ? 3 : numCondition;
+
+		for (int i = 0; i < numCondition; i++) {
+			int index = UnityEngine.Random.Range(0, createConditions.Count-1);
+			conditions.Add(createConditions[index]() );
+			createConditions.RemoveAt (index);
+		}
 
 		validHairs = new List<Condition.Hair> ( allHairs.ToArray() );
 		validPants = new List<Condition.Pant>( allPants.ToArray() );
@@ -277,15 +293,11 @@ public class QuestionController : MonoBehaviour {
 			condition.RemoveValidElements( invalidHairs, invalidPants, invalidSkins );
 		}
 
-//		invalidHairs.Clear ();
-//		invalidPants.Clear ();
-//		invalidSkins.Clear ();
-
 		killIcons ();
 		ShowConditions ();
 	}
 
-	private void killIcons(){
+	public void killIcons(){
 
 		foreach (GameObject icon in icons) {
 
@@ -298,6 +310,9 @@ public class QuestionController : MonoBehaviour {
 	}
 
 	void ShowConditions(){
+
+		texto.SetActive (false);
+
 		for (int i= 0; i<conditions.Count; i++) {
 			Condition cond = conditions [i];
 			GameObject icon = cond.CreateDisplay ();

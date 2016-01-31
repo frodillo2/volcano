@@ -11,40 +11,81 @@ public class GameManager : MonoBehaviour {
 	public GameObject volcan;
 	public List<Person> persons  =  new List<Person>();
 	private int remainingGoodAnswers;
+	public int lives = 3;
+	private int currentLives;
+	public GameObject spawnPointsParent;
+	List<Transform> spawnPoints = new List<Transform>();
+	float lavaHeight = 1f;
 
-	void Start(){
+	private int level;
+	public bool gameFinished;
+	public bool gameStarted;
+
+	//numero de personas que aparecen 
+	int[] minFollowers={3,4,5,5,6,8,12,5,5,6,11,10,5,5,8,8,10,12,10};
+	int[] maxFollowers = { 5, 8, 10, 9, 11, 10, 15, 6, 6, 14, 18, 16, 7, 7, 12, 12, 20, 20, 20 };
+	//numero de condiciones
+	int[] minCondition={1,1,1,2,2,1,2,1,1,1,1,2,3,3,2,2,2,2,3};						
+	int[] maxCondition = { 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3 };						
+	//Numero de personajes validos
+	float[] minValidPercentage={30,25,20,20,20,25,30,20,20,20,20,20,30,30,30,20,20,20,10};
+	float[] maxValidPercentage = { 60, 50, 40, 30, 30, 30, 40, 30, 30, 40, 30, 25, 40, 40, 40, 30, 30, 30, 20 };
+	//Numero de preguntas negativas
+	int[] minNegation={0,0,0,0,0,0,0,1,1,0,0,1,0,1,0,1,0,1,1};
+	int[] maxNegation = { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
+
+	IEnumerator Start(){
+
+		yield return new WaitForSeconds (0.5f);
+
+		while( true ){
+			if (Input.GetMouseButtonDown (0)) {
+				print("preiosno");
+				break;
+			}
+			yield return 0;
+		}
+
 		instance = this;
+		for( int i = 0; i < spawnPointsParent.transform.childCount; i++){
+			spawnPoints.Add( spawnPointsParent.transform.GetChild(i));
+		}
+		currentLives = lives;
 		personPrefab = Resources.Load ("PersonPrefab") as GameObject;
 		loadGame();
+
 	}
 		
 	void loadGame(){
 
-		QuestionController.instance.defineConditions ();
-
-		//StartCoroutine (AparecerMonoCoroutine());
+		QuestionController.instance.defineConditions (2);
 
 		int n = UnityEngine.Random.Range (1, 10);
-		print ("valido: " + n);
+		print ("validos: " + n);
 		AparecerMonoCoroutine(n,10-n);
+
 	}
 
 	void AparecerMonoCoroutine(int valido, int invalido){
-		
+
+		List<Transform> remainingPos = new List<Transform> (spawnPoints);
+
 		remainingGoodAnswers = 0;
 		for(int i = 0; i <valido; i++){
-			Person newPerson = monoValido();	
+			int r = UnityEngine.Random.Range (0,remainingPos.Count-1);
+			Person newPerson = monoValido(remainingPos[r].position);
+			remainingPos.RemoveAt (r);
 
 			persons.Add (newPerson);
 			if (QuestionController.instance.IsValid (newPerson)) {
 				remainingGoodAnswers++;
 			}
-			//yield return new WaitForSeconds (0.8f);
-
 		}
 
 		for(int i = 0; i <invalido; i++){
-			Person newPerson = monoInvalido();	
+			int r = UnityEngine.Random.Range (0,remainingPos.Count-1);
+			Person newPerson = monoInvalido (remainingPos [r].position);
+			remainingPos.RemoveAt (r);
 
 			persons.Add (newPerson);
 			if (QuestionController.instance.IsValid (newPerson)) {
@@ -57,7 +98,7 @@ public class GameManager : MonoBehaviour {
 	/*
 	 * Va imprimieno monos en la pantalla
 	 */
-	Person apereceMono( List<Condition.Hair> hairs, List<Condition.Pant>  pants, List<Condition.Skin> skins) {
+	Person apereceMono( List<Condition.Hair> hairs, List<Condition.Pant>  pants, List<Condition.Skin> skins, Vector3 pos) {
 
 		GameObject instanciaPerson = Instantiate<GameObject>(personPrefab);
 		Person person = instanciaPerson.GetComponent<Person> ();
@@ -72,18 +113,16 @@ public class GameManager : MonoBehaviour {
 
 		person.Configure(hairs[sHair], pants[sPant], skins[sSkin] );
 
-		float x = UnityEngine.Random.Range (-5f, 5f);
-		float y = UnityEngine.Random.Range(-8f,-3f);
-		instanciaPerson.transform.position = new Vector3 (x, y);
+		instanciaPerson.transform.position = pos;
 		return person;
 
 	}
 
-	Person monoValido() {
-		return apereceMono( QuestionController.instance.validHairs, QuestionController.instance.validPants, QuestionController.instance.validSkins );
+	Person monoValido(Vector3 pos) {
+		return apereceMono( QuestionController.instance.validHairs, QuestionController.instance.validPants, QuestionController.instance.validSkins, pos );
 	}
 
-	Person monoInvalido(){
+	Person monoInvalido(Vector3 pos){
 
 		List<Condition.Hair> selectedHairs;
 		List<Condition.Pant> selectedPants;
@@ -106,7 +145,7 @@ public class GameManager : MonoBehaviour {
 			selectedSkins = QuestionController.instance.invalidSkins;
 		}
 
-		return apereceMono( selectedHairs, selectedPants, selectedSkins );
+		return apereceMono( selectedHairs, selectedPants, selectedSkins, pos );
 	}
 
 
@@ -115,10 +154,24 @@ public class GameManager : MonoBehaviour {
 			remainingGoodAnswers--;
 			if (remainingGoodAnswers <= 0) {
 				destroyGame();
+				level++;
 				loadGame();
 			}
 		} else {
-			//erorr
+			currentLives--;
+
+			GameObject volcan = GameObject.FindGameObjectWithTag ("volcan");
+			Vector3 v = volcan.transform.position;
+
+			volcan.transform.localPosition += new Vector3 (0, lavaHeight / ((float)lives));
+
+
+			//subir lava
+			if (currentLives <= 0) {
+				gameFinished = true;
+				QuestionController.instance.killIcons ();
+				StartCoroutine ( EndCoroutine());
+			}
 		}
 	}
 
@@ -133,6 +186,17 @@ public class GameManager : MonoBehaviour {
 		}
 		persons.Clear ();
 
+	}
+
+	IEnumerator EndCoroutine(){
+		yield return new WaitForSeconds (0.5f);
+		while(true) {
+			if( Input.GetMouseButtonDown(0) ){
+				UnityEngine.SceneManagement.SceneManager.LoadScene (1);
+				yield break;
+			}
+			yield return 0;
+		}
 	}
 
 }
