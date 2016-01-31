@@ -9,12 +9,13 @@ public class Person : MonoBehaviour {
 	public Condition.Skin skin;
 	public GameObject question; 
 
+	private SoundManager sounManager;
 
 	bool pinchado = false;
 	float x,y;
 	// Use this for initialization
 	void Start () {
-
+		sounManager=SoundManager._instance;
 		x = GameObject.FindGameObjectWithTag ("volcan").transform.position.x;
 		y = GameObject.FindGameObjectWithTag ("volcan").transform.position.y + 4f;
 
@@ -59,10 +60,12 @@ public class Person : MonoBehaviour {
 
 		pinchado = true;
 		if (QuestionController.instance.IsValid (this)) {
+			sounManager.playHappyPeople();
 			StartCoroutine( moverSprite(true) );
 			print ("valido");
 
 		} else {
+			sounManager.playPeopleGrount();
 			StartCoroutine( moverSprite(false) );
 		}
 

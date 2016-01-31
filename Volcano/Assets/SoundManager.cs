@@ -10,12 +10,11 @@ public class SoundManager : MonoBehaviour {
 	public static SoundManager _instance;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		audio = this.gameObject.GetComponents<AudioSource>();
 		playMainTheme();
-		if(_instance==null){
-			_instance=this;
-		}
+		_instance=this;
+
 
 	}
 	
@@ -40,7 +39,7 @@ public class SoundManager : MonoBehaviour {
 		audio[3].Play();
 	}
 
-	public SoundManager getSoundManager(){
+	public static SoundManager getSoundManager(){
 		return _instance;
 	}
 

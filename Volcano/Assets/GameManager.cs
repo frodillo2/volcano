@@ -5,6 +5,9 @@ using System;
 
 public class GameManager : MonoBehaviour {
 
+	private SoundManager soundManager;
+	private VolcanoEyeManager volcanoEyeManager;
+
 	public static GameManager instance;
 
 	public GameObject personPrefab;
@@ -35,6 +38,8 @@ public class GameManager : MonoBehaviour {
 	int[] maxNegation = { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
 
 	IEnumerator Start(){
+		soundManager=SoundManager._instance;
+		volcanoEyeManager=VolcanoEyeManager._instance;
 
 		yield return new WaitForSeconds (0.5f);
 
@@ -193,6 +198,7 @@ public class GameManager : MonoBehaviour {
 
 	public void OnAnswer( bool isGoodAnswer ){
 		if (isGoodAnswer) {
+			volcanoEyeManager.sethappyEyeFlagTrue();
 			remainingGoodAnswers--;
 			if (remainingGoodAnswers <= 0) {
 				destroyGame();
@@ -200,8 +206,9 @@ public class GameManager : MonoBehaviour {
 				loadGame();
 			}
 		} else {
+			soundManager.playVolcanoAngry();
+			volcanoEyeManager.setAngryEyeFlagTrue();
 			currentLives--;
-
 			GameObject volcan = GameObject.FindGameObjectWithTag ("volcan");
 			Vector3 v = volcan.transform.position;
 
