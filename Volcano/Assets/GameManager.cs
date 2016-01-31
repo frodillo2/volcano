@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour {
 	List<Transform> spawnPoints = new List<Transform>();
 	float lavaHeight = 1f;
 
+	public GameObject endText;
+
 	private int level;
 	public bool gameFinished;
 	public bool gameStarted;
@@ -40,6 +42,7 @@ public class GameManager : MonoBehaviour {
 	IEnumerator Start(){
 		soundManager=SoundManager._instance;
 		volcanoEyeManager=VolcanoEyeManager._instance;
+		endText.SetActive(false);
 
 		yield return new WaitForSeconds (0.5f);
 
@@ -251,6 +254,7 @@ public class GameManager : MonoBehaviour {
 			if (currentLives <= 0) {
 				gameFinished = true;
 				QuestionController.instance.killIcons ();
+				endText.SetActive(true);
 				StartCoroutine ( EndCoroutine());
 			}
 		}
@@ -273,7 +277,7 @@ public class GameManager : MonoBehaviour {
 		yield return new WaitForSeconds (0.5f);
 		while(true) {
 			if( Input.GetMouseButtonDown(0) ){
-				UnityEngine.SceneManagement.SceneManager.LoadScene (2);
+				UnityEngine.SceneManagement.SceneManager.LoadScene (0);
 				yield break;
 			}
 			yield return 0;
