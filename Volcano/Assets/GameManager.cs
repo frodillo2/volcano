@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
 	List<Transform> spawnPoints = new List<Transform>();
 	float lavaHeight = 1f;
 
+	public GameObject beginText;
 	public GameObject endText;
 
 	private int level;

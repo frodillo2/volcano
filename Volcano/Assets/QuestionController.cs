@@ -16,6 +16,7 @@ public abstract class Condition{
 
 	protected abstract GameObject CreateIcon ();
 
+
 	private GameObject getTrueOrFalse(){
 
 		String option = (this.yes)? "yesPrefab" : "notPrefab";
@@ -222,6 +223,7 @@ public class SkinCondition : Condition{
 
 public class QuestionController : MonoBehaviour {
 
+	public GameObject beingText;
 	public static QuestionController instance;
 	public List<Condition> conditions =  new List<Condition>();
 	private List <GameObject> icons = new List<GameObject>();
@@ -238,7 +240,6 @@ public class QuestionController : MonoBehaviour {
 	public List<Condition.Pant> invalidPants = new List<Condition.Pant>();
 	public List<Condition.Skin> invalidSkins = new List<Condition.Skin>();
 
-	GameObject texto;
 
 	// Use this for initialization
 	void Start () {
@@ -258,9 +259,8 @@ public class QuestionController : MonoBehaviour {
 		foreach (Condition.Skin s in skinsArray) {
 			allSkins.Add (s);
 		}
-
-		texto = GameObject.FindGameObjectWithTag ("texto");
-
+			
+		beingText.SetActive(true);
 	}
 
 	delegate Condition CreateConditionFunc(bool isPositive);
@@ -268,6 +268,7 @@ public class QuestionController : MonoBehaviour {
 	public void defineConditions(int numCondition, int numNegations ){
 
 		conditions.Clear();
+
 
 
 		List<bool> isPositiveList = new List<bool> ();
@@ -321,7 +322,7 @@ public class QuestionController : MonoBehaviour {
 
 	void ShowConditions(){
 
-		texto.SetActive (false);
+		beingText.SetActive(false);
 
 		if (conditions.Count == 1) {
 			for (int i = 0; i < conditions.Count; i++) {
