@@ -36,7 +36,7 @@ public class Person : MonoBehaviour {
 
 		GameObject pantGameObject = Instantiate(Resources.Load ("Pants/" + pant.ToString () + "Prefab") ) as GameObject;
 		pantGameObject.transform.parent = this.transform;
-		pantGameObject.transform.localPosition = new Vector3 (-0.2f, -0.21f, 0);
+		pantGameObject.transform.localPosition = new Vector3 (-0.2f, -0.15f, 0);
 
 		GameObject skinGameObject = Instantiate(Resources.Load ("Skins/" + skin.ToString () + "Prefab") ) as GameObject;
 		skinGameObject.transform.parent = this.transform;
@@ -45,7 +45,9 @@ public class Person : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {}
+	void Update () {
+
+	}
 	void OnMouseDown() {
 
 		if(GameManager.instance.gameFinished){

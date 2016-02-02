@@ -6,6 +6,8 @@ using System;
 public class GameManager : MonoBehaviour {
 
 	private SoundManager soundManager;
+	private UIManager uiManager;
+	private SaveDataManager saveDataManager;
 	private VolcanoEyeManager volcanoEyeManager;
 
 	public static GameManager instance;
@@ -42,7 +44,10 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator Start(){
 		soundManager=SoundManager._instance;
+		uiManager=UIManager._instance;
+		saveDataManager=SaveDataManager.instance_;
 		volcanoEyeManager=VolcanoEyeManager._instance;
+
 		endText.SetActive(false);
 
 		yield return new WaitForSeconds (0.5f);
@@ -239,6 +244,8 @@ public class GameManager : MonoBehaviour {
 			if (remainingGoodAnswers <= 0) {
 				destroyGame();
 				level++;
+				uiManager.setLevelText(level+1);
+				saveDataManager.setBestLevel(level);
 				loadGame();
 			}
 		} else {

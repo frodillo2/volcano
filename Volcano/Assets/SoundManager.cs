@@ -25,6 +25,7 @@ public class SoundManager : MonoBehaviour {
 
 	public void playMainTheme(){
 		audio[0].Play();
+		audio[0].loop=true;
 	}
 
 	public void playVolcanoAngry(){
