@@ -13,7 +13,7 @@ public class SaveDataManager : MonoBehaviour {
 			bestLevel=1;
 			PlayerPrefs.SetInt("bestLevel",bestLevel);
 		}else{
-			PlayerPrefs.GetInt("bestLevel");
+			bestLevel=PlayerPrefs.GetInt("bestLevel");
 		}
 	}
 	

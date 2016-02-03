@@ -128,7 +128,9 @@ public class GameManager : MonoBehaviour {
 		remainingGoodAnswers = 0;
 		for(int i = 0; i <valido; i++){
 			int r = UnityEngine.Random.Range (0,remainingPos.Count-1);
-			Person newPerson = monoValido(remainingPos[r].position);
+			Vector3 personPos=remainingPos[r].position;
+			personPos=new Vector3(personPos.x,personPos.y,personPos.z);
+			Person newPerson = monoValido(personPos);
 			remainingPos.RemoveAt (r);
 
 			persons.Add (newPerson);

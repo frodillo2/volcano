@@ -32,7 +32,7 @@ public class Person : MonoBehaviour {
 
 		GameObject hairGameObject = Instantiate(Resources.Load ("Hairs/" + hair.ToString () + "Prefab") ) as GameObject;
 		hairGameObject.transform.parent = this.transform;
-		hairGameObject.transform.localPosition = new Vector3 (-0.2f, 0.61f, 0);
+		hairGameObject.transform.localPosition = new Vector3 (-0.2f, 0.68f, 0);
 
 		GameObject pantGameObject = Instantiate(Resources.Load ("Pants/" + pant.ToString () + "Prefab") ) as GameObject;
 		pantGameObject.transform.parent = this.transform;
