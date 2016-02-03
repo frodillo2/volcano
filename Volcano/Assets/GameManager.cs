@@ -254,7 +254,6 @@ public class GameManager : MonoBehaviour {
 			soundManager.playVolcanoAngry();
 			volcanoEyeManager.setAngryEyeFlagTrue();
 			currentLives--;
-			GameObject volcan = GameObject.FindGameObjectWithTag ("volcan");
 			Vector3 v = volcan.transform.position;
 
 			volcan.transform.localPosition += new Vector3 (0, lavaHeight / ((float)lives));

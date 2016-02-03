@@ -16,8 +16,8 @@ public class Person : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		sounManager=SoundManager._instance;
-		x = GameObject.FindGameObjectWithTag ("volcan").transform.position.x;
-		y = GameObject.FindGameObjectWithTag ("volcan").transform.position.y + 4f;
+		x = GameObject.FindGameObjectWithTag ("volcan").transform.position.x-2.3f;
+		y = GameObject.FindGameObjectWithTag ("volcan").transform.position.y + 6.2f;
 
 	}
 	/*
@@ -79,7 +79,7 @@ public class Person : MonoBehaviour {
 		this.transform.position = new Vector3 (x, y,-1);
 
 
-		float h = this.transform.localScale.y*(float)0.2;
+		float h = this.transform.localScale.y*0.2f;
 
 
 		for(int i = 0; i <10; i++){
